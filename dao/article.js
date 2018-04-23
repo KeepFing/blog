@@ -27,13 +27,17 @@ var jsonWrite = function(res, ret) {
 };
 
 module.exports = {
+	//查询所有的博客需要分页
 	queryBlog: function(req,res,next){
 		pool.getConnection(function(err,connection){
 			if (err) {
 				console.log(err)
 			}
-			var parma = req.body
-			connection.query($sql.queryBlog,function(err,result){
+			var page = req.body.page
+			var limit = req.body.limit
+			var left = (page*limit)-(limit*1);
+			var right = (1*limit);
+			connection.query($sql.queryBlog,[left,right],function(err,result){
 				console.log(result)
 				var obj = {"code":0,'data':result,"msg":"成功"}
 				jsonWrite(res,obj)
@@ -41,7 +45,7 @@ module.exports = {
 			})
 		})
 	},
-	
+	//添加一个文章，需要传入文章的标题、副标题、作者、内容、类别、创建时间6个参数
 	saveBlog: function(req,res,next){
 		pool.getConnection(function(err,connection){
 			if (err) {
@@ -49,7 +53,7 @@ module.exports = {
 			}
 			var parma = req.body
 			var id = uuid.v4().replace(/-/g,'');
-			connection.query($sql.saveBlog,[id,parma.title,parma.subTitle,parma.author,parma.content,parma.typeId,parma.createTime],function(err,result){
+			connection.query($sql.saveBlog,[id,parma.title,parma.subTitle,parma.author,parma.content,parma.typeId,parma.createTime,0,0,0],function(err,result){
 				if(err){
 					jsonWrite(res,{'code':504,'msg':'有毒'})
 				}
@@ -58,7 +62,7 @@ module.exports = {
 			})
 		})
 	},
-	
+	//在文章被点击的时候调用addWatchTimes接口，表示被阅读次数加一
 	addWatchTimes: function(req,res,next){
 		pool.getConnection(function(err,connection){
 			if(err){
@@ -74,7 +78,7 @@ module.exports = {
 			})
 		})
 	},
-	
+	//文章的最后有两个按钮，喜欢和不喜欢，这是点击喜欢的按钮，需要传入累计的数
 	addLike: function(req,res,next){
 		pool.getConnection(function(err,result){
 			if(err){
@@ -89,7 +93,7 @@ module.exports = {
 			})
 		})
 	},
-	
+	//文章的最后有两个按钮，喜欢和不喜欢，这是点击喜欢的按钮，需要传入累计的数
 	addDislike: function(req,res,next){
 		pool.getConnection(function(err,result){
 			if(err){
@@ -104,7 +108,7 @@ module.exports = {
 			})
 		})
 	},
-	
+	//这是文章评论的接口，需要传入文章id，用户id，评论内容和时间4个参数
 	addBBS:function(req,res,next){
 		pool.getConnection(function(err,result){
 			if (err) {
@@ -112,7 +116,7 @@ module.exports = {
 			}
 			var parma = req.body
 			var id = uuid.v4().replace(/-/g,'');
-			connection.query($sql.addBBS,[id,articleId,userId,message,createTime],function(err,result){
+			connection.query($sql.addBBS,[id,parma.articleId,parma.userId,parma.message,parma.createTime],function(err,result){
 				if (err) {
 					jsonWrite(res,{'code':504,'msg':'有毒'})
 				}
@@ -121,7 +125,7 @@ module.exports = {
 			})
 		})
 	},
-	
+	//这是查询文章评论的接口，需要传入文章id，用户id，评论内容和时间4个参数
 	queryBBS: function(req,res,next){
 		pool.getConnection(function(err,connection){
 			if (err) {
@@ -131,7 +135,7 @@ module.exports = {
 			var limit = req.body.limit
 			var left = (page*limit)-(limit*1);
 			var right = (1*limit);
-			connection.query($sql.queryBBS,[left,right],function(err,result){
+			connection.query($sql.queryBBS,[req.body.articleId,left,right],function(err,result){
 				if (err) {
 					jsonWrite(res,{'code':504,'msg':'有毒'})
 				}
