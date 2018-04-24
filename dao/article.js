@@ -38,13 +38,36 @@ module.exports = {
 			var left = (page*limit)-(limit*1);
 			var right = (1*limit);
 			connection.query($sql.queryBlog,[left,right],function(err,result){
-				console.log(result)
-				var obj = {"code":0,'data':result,"msg":"成功"}
-				jsonWrite(res,obj)
+				connection.query('SELECT count(0) as total from article_t',function(err,result1){
+					console.log(result1)
+					var obj = {"code":0,'data':result,'total':result1[0].total,'pageSize':limit,'page':page,"msg":"成功"}
+					jsonWrite(res,obj)
+				})
 				connection.release();
 			})
 		})
 	},
+	//按关键字查询所有的博客
+	queryBlogByKey: function(req,res,next){
+		pool.getConnection(function(err,connection){
+			if(err){
+				console.log(err)
+			}
+			var parma = req.body
+			var page = req.body.page
+			var limit = req.body.limit
+			var left = (page*limit)-(limit*1);
+			var right = (1*limit);
+			connection.query($sql.queryBlogByKey,[parma.key,left,right],function(err,result){
+				if(err){
+					jsonWrite(res,{'code':504,'msg':'有毒'})
+				}
+				jsonWrite(res,{'code':0,'data':result,'msg':'成功'})
+				connection.release()
+			})
+		})
+	},
+	
 	//添加一个文章，需要传入文章的标题、副标题、作者、内容、类别、创建时间6个参数
 	saveBlog: function(req,res,next){
 		pool.getConnection(function(err,connection){

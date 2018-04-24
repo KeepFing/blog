@@ -5,6 +5,7 @@ module.exports = {
         password: '',
         database:'blog',
         port: 3306,
-        dateStrings:true
+        dateStrings:true,
+        multipleStatements:true
     }
 };

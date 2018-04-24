@@ -12,6 +12,11 @@ router.post('/queryBlog',function(req,res,next){
 	dao.queryBlog(req,res,next)
 });
 
+router.post('/queryBlogByKey',function(req,res,next){
+	console.log("queryblog")
+	dao.queryBlogByKey(req,res,next)
+});
+
 router.post('/saveBlog',function(req,res,next){
 	dao.saveBlog(req,res,next)
 });
