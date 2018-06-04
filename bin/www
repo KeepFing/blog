@@ -88,3 +88,4 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+console.log("服务启动成功，运行在"+port+"端口");

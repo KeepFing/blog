@@ -4,12 +4,17 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+/**
+ * require路由文件
+ */
 var index = require('./routes/index');
 var users = require('./routes/users');
+var system = require('./routes/system');
 
 var app = express();
-
+/**
+ * 设置请求头，主要处理跨域
+ */
 app.all('*', function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "X-Requested-With");
@@ -31,9 +36,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use('/public',express.static(path.join(__dirname, 'public')));
-
+/**
+ * 设置顶级路由，api开头，后面是模块
+ */
 app.use('/', index);
 app.use('/api/users', users);
+app.use('/api/system',system);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

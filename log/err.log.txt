@@ -1,0 +1,6 @@
+2018年6月1日 10:6:10发生错误：数据库查询错误Error: ER_NO_SUCH_TABLE: Table 'blog.link' doesn't exist
+2018年6月1日 10:7:3发生错误：数据库查询错误Error: ER_NO_SUCH_TABLE: Table 'blog.link' doesn't exist
+2018年6月1日 10:10:11发生错误：数据库查询错误Error: ER_NO_SUCH_TABLE: Table 'blog.link' doesn't exist
+2018年6月1日 10:00:48发生错误：数据库查询错误Error: ER_NO_SUCH_TABLE: Table 'blog.link' doesn't exist
+2018年6月4日 9:52:02发生错误：数据库连接错误Error: ER_BAD_FIELD_ERROR: Unknown column 'create_time' in 'order clause'
+2018年6月4日 9:55:13发生错误：数据库连接错误Error: ER_BAD_FIELD_ERROR: Unknown column 'creat_time' in 'field list'

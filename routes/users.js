@@ -41,6 +41,10 @@ router.post('/queryBBS',function(req,res,next){
 	dao.queryBBS(req,res,next)
 });
 
+router.post('/queryBlogByType',function(req,res,next){
+	dao.queryBlogByType(req,res,next);
+});
+
 
 
 module.exports = router;

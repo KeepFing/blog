@@ -1,7 +1,7 @@
 var mysql = require('mysql');
 var $conf = require('../db/db');
 var $sql = require('./articleSql.js');
-//var $util = require('../util/util');
+var $common = require('../public/common');
 //var $sql = require('./wxbugSqlMapping');
 var uuid = require('node-uuid');
 
@@ -154,16 +154,38 @@ module.exports = {
 			if (err) {
 				console.log(err)
 			}
-			var page = req.body.page
-			var limit = req.body.limit
-			var left = (page*limit)-(limit*1);
-			var right = (1*limit);
-			connection.query($sql.queryBBS,[req.body.articleId,left,right],function(err,result){
+			var parma = req.body;
+			var pageInfo = $common.returnPages(parma.page,parma.limit);
+			connection.query($sql.queryBBS,[req.body.articleId,pageInfo.left,pageInfo.right],function(err,result){
 				if (err) {
-					jsonWrite(res,{'code':504,'msg':'有毒'})
+					$common.queryMysqlError(res,err);
+					$common.writeErrorLog('query',err)
+				} else {
+					$common.querySuccess(res,result);
+					connection.release();
 				}
-				jsonWrite(res,{'code':0,'data':result,'msg':'成功'})
-				connection.release();
+			})
+		})
+	},
+	/**
+	 * 根据文章的类型查询文章列表
+	 */
+	queryBlogByType:function(req,res,next){
+		pool.getConnection(function( err,connection){
+			if (err) {
+				$common.linkMysqlError(res,err);
+				$common.writeErrorLog('link',err);
+			};
+			var parma = req.body;
+			var pageInfo = $common.returnPages(parma.page,parma.limit);
+			connection.query($sql.queryBlogByType,[parma.typeId,pageInfo.left,pageInfo.right],function(err,result){
+				if (err) {
+					$common.queryMysqlError(res,err);
+					$common.writeErrorLog('link',err);
+				} else {
+					$common.querySuccess(res,result);
+					connection.release();
+				}
 			})
 		})
 	}
