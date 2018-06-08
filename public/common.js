@@ -77,7 +77,7 @@ module.exports = {
      * 封装查询成功时向前端返回的json数据
      */
     querySuccess:function(res,result){
-        jsonWrite(res,{'code':0,'data':result,'msg':'查询成功'});
+        jsonWrite(res,{"status":1,'code':0,'data':result,'msg':'查询成功'});
     },
     /**
      * 封装删除成功时向前端返回的json数据

@@ -21,7 +21,8 @@ module.exports = {
 					title: TITLE
 				});
 				return;
-			}
+			};
+			console.log(err);
 			console.log(files);
 
 			var extName = ''; //后缀名

@@ -88,5 +88,21 @@ module.exports = {
                 }
             })
         })
+    },
+    /**
+     * 测试接口
+     */
+    test:function(req,res,next){
+        pool.getConnection(function(err,connection){
+            var parma = req.body;
+            console.log(parma)
+            var len = parma.ids.length;
+            connection.query($sql.test,[parma.ids],function(err,result){
+                if (result.affectedRows == len) {
+                    $common.querySuccess(res,result);
+                }
+                connection.release();
+            });
+        })
     }
 }

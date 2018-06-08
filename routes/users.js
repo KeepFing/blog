@@ -6,7 +6,9 @@ var dao = require('../dao/article.js')
 router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
-
+/**
+ * 查询所有文章
+ */
 router.post('/queryBlog',function(req,res,next){
 	console.log("queryblog")
 	dao.queryBlog(req,res,next)
@@ -44,6 +46,18 @@ router.post('/queryBBS',function(req,res,next){
 router.post('/queryBlogByType',function(req,res,next){
 	dao.queryBlogByType(req,res,next);
 });
+
+router.post('/queryBlogByReadTimes',function(req,res,next){
+	dao.queryBlogByReadTimes(req,res,next);
+});
+
+router.post('/queryBlogById',function(req,res,next){
+	dao.queryBlogById(req,res,next);
+});
+
+router.post('/queryBlogType',function(req,res,next){
+	dao.queryBlogType(req,res,next);
+})
 
 
 

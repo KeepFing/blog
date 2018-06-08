@@ -38,6 +38,7 @@ module.exports = {
 			var left = (page*limit)-(limit*1);
 			var right = (1*limit);
 			connection.query($sql.queryBlog,[left,right],function(err,result){
+				console.log(result);
 				connection.query('SELECT count(0) as total from article_t',function(err,result1){
 					console.log(result1)
 					var obj = {"code":0,'data':result,'total':result1[0].total,'pageSize':limit,'page':page,"msg":"成功"}
@@ -60,10 +61,14 @@ module.exports = {
 			var right = (1*limit);
 			connection.query($sql.queryBlogByKey,[parma.key,left,right],function(err,result){
 				if(err){
-					jsonWrite(res,{'code':504,'msg':'有毒'})
+					$common.linkMysqlError(res,err);
+					$common.writeErrorLog('link',err);
+				} else {	
+					var data = {"blogList":result[0],"total":result[1].total,"page":page,"limit":limit};
+					$common.querySuccess(res,data);
+					connection.release();
 				}
-				jsonWrite(res,{'code':0,'data':result,'msg':'成功'})
-				connection.release()
+				
 			})
 		})
 	},
@@ -133,22 +138,22 @@ module.exports = {
 	},
 	//这是文章评论的接口，需要传入文章id，用户id，评论内容和时间4个参数
 	addBBS:function(req,res,next){
-		pool.getConnection(function(err,result){
+		pool.getConnection(function(err,connection){
 			if (err) {
-				console.log(err)
+				$common.writeErrorLog('link',err)
 			}
 			var parma = req.body
 			var id = uuid.v4().replace(/-/g,'');
 			connection.query($sql.addBBS,[id,parma.articleId,parma.userId,parma.message,parma.createTime],function(err,result){
 				if (err) {
-					jsonWrite(res,{'code':504,'msg':'有毒'})
+					$common.writeErrorLog('query',err)
 				}
 				jsonWrite(res,{'code':0,'msg':'成功'})
 				connection.release();
 			})
 		})
 	},
-	//这是查询文章评论的接口，需要传入文章id，用户id，评论内容和时间4个参数
+	//这是查询文章评论的接口，需要传入文章id，分页信息
 	queryBBS: function(req,res,next){
 		pool.getConnection(function(err,connection){
 			if (err) {
@@ -156,7 +161,7 @@ module.exports = {
 			}
 			var parma = req.body;
 			var pageInfo = $common.returnPages(parma.page,parma.limit);
-			connection.query($sql.queryBBS,[req.body.articleId,pageInfo.left,pageInfo.right],function(err,result){
+			connection.query($sql.queryBBS,[parma.id,pageInfo.left,pageInfo.right],function(err,result){
 				if (err) {
 					$common.queryMysqlError(res,err);
 					$common.writeErrorLog('query',err)
@@ -181,7 +186,68 @@ module.exports = {
 			connection.query($sql.queryBlogByType,[parma.typeId,pageInfo.left,pageInfo.right],function(err,result){
 				if (err) {
 					$common.queryMysqlError(res,err);
-					$common.writeErrorLog('link',err);
+					$common.writeErrorLog('query',err);
+				} else {
+					$common.querySuccess(res,result);
+					connection.release();
+				}
+			})
+		})
+	},
+	/**
+	 * 查询被阅读次数较多的文章按降序排列
+	 */
+	queryBlogByReadTimes:function(req,res,next){
+		pool.getConnection(function(err,connection){
+			if (err) {
+				$common.linkMysqlError(res,err);
+				$common.writeErrorLog('link',err);
+			};
+			connection.query($sql.queryBlogByReadTimes,function(err,result){
+				if (err) {
+					$common.queryMysqlError(res,err);
+					$common.writeErrorLog('query',err);
+				} else {
+					$common.querySuccess(res,result);
+					connection.release();
+				}
+			})
+		})
+	},
+	/**
+	 * 根据id查询文章详情
+	 */
+	queryBlogById:function(req,res,next){
+		pool.getConnection(function(err,connection){
+			if (err) {
+				$common.linkMysqlError(res,err);
+				$common.writeErrorLog('link',err);
+			};
+			var parma = req.body;
+			connection.query($sql.queryBlogById,[parma.id],function(err,result){
+				if (err) {
+					$common.queryMysqlError(res,err);
+					$common.writeErrorLog('query',err);
+				} else {
+					$common.querySuccess(res,result[0]);
+					connection.release();
+				}
+			})
+		})
+	},
+	/**
+	 * 查询文章类别
+	 */
+	queryBlogType:function(req,res,next){
+		pool.getConnection(function(err,connection){
+			if (err) {
+				$common.linkMysqlError(res,err);
+				$common.writeErrorLog('link',err);
+			};
+			connection.query($sql.queryBlogType,function(err,result){
+				if (err) {
+					$common.queryMysqlError(res,err);
+					$common.writeErrorLog('query',err);
 				} else {
 					$common.querySuccess(res,result);
 					connection.release();
@@ -189,5 +255,4 @@ module.exports = {
 			})
 		})
 	}
-	
 }

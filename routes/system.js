@@ -72,7 +72,15 @@ router.post('/deleteNotice',function(req,res,next){
 /**
  * 
  */
-router.post('updateNotice',function(req,res,next){
+router.post('/updateNotice',function(req,res,next){
     noticeDao.updateNotice(req,res,next);
-})
+});
+
+
+/**
+ * 测试接口的路由
+ */
+router.post('/test',function(req,res,next){
+    linkDao.test(req,res,next);
+});
 module.exports = router;
